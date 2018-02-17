@@ -1,13 +1,14 @@
 class Stack
 	def initialize
-		local = Array.new()
-	end
-	def pop
-		local.pop()
+		@local = Array.new()
 	end
 
-	def push
-		local.push(local.length)
+	def pop
+		@local.pop()
+	end
+
+	def push e
+		@local.push(e)
 	end
 end
 
@@ -42,11 +43,11 @@ def parse
 	max = $stdin.readline
 	start = $stdin.readline.chomp()
 	goal = $stdin.readline.chomp()
-	stacks = Stack.new()
-	stacks = start.split(";")
+	stacks = Array.new
+	stacks_str = start.split(";")
 	goal = goal.split(";")
 
-	stacks.each_with_index do |s, i|
+	stacks_str.each_with_index do |s, i|
 		s.gsub!('(', '')
 		s.gsub!(')', '')
 		s.gsub!(' ', '')
@@ -54,7 +55,11 @@ def parse
 		goal[i].gsub!(')', '')
 		goal[i].gsub!(' ', '')
 
-		stacks[i] = s.split(",")
+		stacks[i] = Stack.new
+		s.split(",").each do |c|
+			stacks[i].push c 
+		end
+
 		goal[i] = goal[i].split(",")
 	end
 
@@ -71,6 +76,4 @@ end
 def cost_function(action)
 	(action[0] - action[1]).abs + 1
 end
-
-print cost_function([2,4])
 parse
