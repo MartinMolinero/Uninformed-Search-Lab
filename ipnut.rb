@@ -115,7 +115,8 @@ class Node
 
 	def equals? n
 		@state.each_with_index do |s, i|
-			if s.local != n.state[i].local then
+			if s.local != n.state[i].local \
+				&& s.to_s != "[\"X\"]" && n.state[i].to_s != "[\"X\"]" then
 				return false
 			end
 		end
@@ -172,7 +173,7 @@ def parse
 		if !@V_str.include? n.to_s then
 			if n.equals? goal then
 				found = true
-				m = n.parent
+				m = n
 				while !m.equals? start
 					actions.push m.action
 					m = m.parent
