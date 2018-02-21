@@ -1,6 +1,10 @@
 class Stack
-	def initialize
+	def initialize 
 		@local = Array.new()
+	end
+
+	def from_array a
+		@local = a
 	end
 
 	def pop
@@ -63,11 +67,16 @@ class Node
 	def generate_child(action)
 		new_state = Array.new
 		@state.each do |s|
-			new_state.push s.clone
+			new_stack = Stack.new
+			new_stack.from_array s.clone
+			new_state.push new_stack
 		end
 		a = action.split(",")[0].to_i
 		b = action.split(",")[1].to_i
-		new_state[b].push(new_state[a].pop())
+		e = new_state[a].pop()
+		if !e.nil? then
+			new_state[b].push(e)
+		end
 		new_node = Node.new(new_state, self, action, @path_cost + cost_function(a,b), @max)
 		new_node
 	end
@@ -141,29 +150,32 @@ def parse
 
 	@Q = Array.new
 	@V = Array.new
+	@V_str = Array.new
 	@Q.push start
 	found = false
 	while !@Q.empty? && !found
-		n = @Q.pop
-		if !@V.include? n then
+		n = @Q.shift
+		if !@V_str.include? n.to_s then
 			if n.equals? goal then
 				found = true
 			else
 				@V.push n
+				@V_str.push n.to_s
 				n.children.each do |c|
 					@Q.push n.generate_child(c)
-					print n.inspect
-					enter = $stdin.readline
 				end
-				print n.inspect
 				@Q.sort_by! do |node|
 					node.path_cost
 				end
 			end
 		end
-		# print @Q
-		# puts "\n V \n"
-		# print @V
+		@Q.each do |q|
+			puts q.state.inspect
+		end
+		puts "\n V \n"
+		@V.each do |q|
+			puts q.state.inspect
+		end
 		enter = $stdin.readline
 	end
 
