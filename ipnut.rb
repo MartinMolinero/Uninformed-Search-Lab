@@ -9,6 +9,7 @@ class Stack
 
 	def push e
 		@local.push(e)
+		self
 	end
 
 	def length
@@ -18,21 +19,16 @@ class Stack
 	def local
 		@local
 	end
-end
 
-
-def generate_child(node, action)
-	state = node.state
-	a = action.split(",")[0].to_i
-	b = action.split(",")[1].to_i
-	state[b].push(state[a].pop())
-	Node.new(state, node, action, node.path_cost + cost_function(a,b), node.max)
+	def clone
+		@local.clone
+	end
 end
 
 class Node
 
 	def initialize(stack_arr, parent, action, path_cost, max)
-		@state = stack_arr
+		@state = stack_arr.clone
 		@parent = parent
 		@action = action
 		@path_cost = path_cost
@@ -62,6 +58,18 @@ class Node
 			end
 		end
 	 	@final_actions
+	end
+
+	def generate_child(action)
+		new_state = Array.new
+		@state.each do |s|
+			new_state.push s.clone
+		end
+		a = action.split(",")[0].to_i
+		b = action.split(",")[1].to_i
+		new_state[b].push(new_state[a].pop())
+		new_node = Node.new(new_state, self, action, @path_cost + cost_function(a,b), @max)
+		new_node
 	end
 
 	def state
@@ -143,7 +151,9 @@ def parse
 			else
 				@V.push n
 				n.children.each do |c|
-					@Q.push generate_child(n,c)
+					@Q.push n.generate_child(c)
+					print n.inspect
+					enter = $stdin.readline
 				end
 				print n.inspect
 				@Q.sort_by! do |node|
