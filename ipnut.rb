@@ -1,5 +1,5 @@
 class Stack
-	def initialize 
+	def initialize
 		@local = Array.new()
 	end
 
@@ -30,7 +30,7 @@ class Stack
 
 	def to_s
 		local.to_s
-	end	
+	end
 end
 
 class Node
@@ -56,7 +56,7 @@ class Node
 		@possible_actions = []
 		@final_actions = []
 		@actions.permutation(2).to_a.each do |a,b|
-			@possible_actions.push(a.to_s + "," + b.to_s)
+			@possible_actions.push(a.to_s + ", " + b.to_s)
 		end
 		@possible_actions.each_with_index do |p, i|
 			a = p.split(",")[0]
@@ -189,12 +189,17 @@ def parse
 			end
 		end
 	end
-
-	actions.reverse.each do |s|
-		res += "(" + s + "); "
+	if @Q.empty? && !found then
+		print "No solution found"
+	else
+		actions.reverse.each do |s|
+			res += "(" + s + "); "
+		end
+		puts n.path_cost
+		print res[0, res.length() -2 ]
 	end
-	puts n.path_cost
-	print res
+
+
 
 end
 
