@@ -27,6 +27,10 @@ class Stack
 	def clone
 		@local.clone
 	end
+
+	def to_s
+		local.to_s
+	end	
 end
 
 class Node
@@ -101,6 +105,14 @@ class Node
 		@max
 	end
 
+	def to_s
+		str = "";
+		@state.each do |s|
+			str.concat(s.to_s)
+		end
+		str
+	end
+
 	def equals? n
 		@state.each_with_index do |s, i|
 			if s.local != n.state[i].local then
@@ -153,11 +165,18 @@ def parse
 	@V_str = Array.new
 	@Q.push start
 	found = false
+	actions = Array.new
+	res = ""
 	while !@Q.empty? && !found
 		n = @Q.shift
 		if !@V_str.include? n.to_s then
 			if n.equals? goal then
 				found = true
+				m = n.parent
+				while !m.equals? start
+					actions.push m.action
+					m = m.parent
+				end
 			else
 				@V.push n
 				@V_str.push n.to_s
@@ -169,17 +188,13 @@ def parse
 				end
 			end
 		end
-		@Q.each do |q|
-			puts q.state.inspect
-		end
-		puts "\n V \n"
-		@V.each do |q|
-			puts q.state.inspect
-		end
-		enter = $stdin.readline
 	end
 
-	print @V
+	actions.reverse.each do |s|
+		res += "(" + s + "); "
+	end
+	puts n.path_cost
+	print res
 
 end
 
