@@ -21,12 +21,12 @@ class Stack
 end
 
 
-def generate_child( node, action)
-	@state = node.state
+def generate_child(node, action)
+	state = node.state
 	a = action.split(",")[0].to_i
 	b = action.split(",")[1].to_i
-	@state[b].push(@state[a].pop())
-	Node.new(@state, node, action, node.path_cost + cost_function(a,b), node.max)
+	state[b].push(state[a].pop())
+	Node.new(state, node, action, node.path_cost + cost_function(a,b), node.max)
 end
 
 class Node
@@ -85,7 +85,7 @@ class Node
 	end
 
 	def equals? n
-		@stacks.each_with_index do |s, i|
+		@state.each_with_index do |s, i|
 			if s.local != n.state[i].local then
 				return false
 			end
@@ -122,37 +122,42 @@ def parse
 			goal_stacks[i].push c
 		end
 
+		start = Node.new(stacks, nil, "0,0", 0, max)
+		goal = Node.new(goal_stacks, nil, nil, 0, max)
 	end
 
-	start = Node.new(stacks, nil, "0,0", 0, max)
-	goal = Node.new(goal_stacks, nil, nil, 0, max)
 	# puts max
-	# print start.state[0].local
+	# print goal.inspect
 	# print goal.state[0].local
 	# print start.equals? goal
 
-	Q = Array.new
-	V = Array.new
-	Q.push start
+	@Q = Array.new
+	@V = Array.new
+	@Q.push start
 	found = false
-	while !Q.empty? && !found
-		n = Q.pop
-		if !V.include? n then
+	while !@Q.empty? && !found
+		n = @Q.pop
+		if !@V.include? n then
 			if n.equals? goal then
 				found = true
 			else
-				V.push n
+				@V.push n
 				n.children.each do |c|
-					Q.push generate_child(n,c)
+					@Q.push generate_child(n,c)
 				end
-				Q.sort_by do |node|
+				print n.inspect
+				@Q.sort_by! do |node|
 					node.path_cost
 				end
 			end
 		end
+		# print @Q
+		# puts "\n V \n"
+		# print @V
+		enter = $stdin.readline
 	end
 
-	print V
+	print @V
 
 end
 
