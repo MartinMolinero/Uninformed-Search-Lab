@@ -14,6 +14,10 @@ class Stack
 	def length
 		@local.length
 	end
+
+	def local
+		@local
+	end
 end
 
 
@@ -79,42 +83,76 @@ class Node
 	def max
 		@max
 	end
-end
 
+	def equals? n
+		@stacks.each_with_index do |s, i|
+			if s.local != n.state[i].local then
+				return false
+			end
+		end
+		true
+	end
+end
 
 def parse
 	max = $stdin.readline
 	start = $stdin.readline.chomp()
-	goal = $stdin.readline.chomp()
-	stacks = Array.new
+	goal_str = $stdin.readline.chomp()
 	stacks_str = start.split(";")
-	goal = goal.split(";")
+	goal_str = goal_str.split(";")
+	stacks = Array.new
+	goal_stacks = Array.new
+	goal = Array.new
 
 	stacks_str.each_with_index do |s, i|
 		s.gsub!('(', '')
 		s.gsub!(')', '')
 		s.gsub!(' ', '')
-		goal[i].gsub!('(', '')
-		goal[i].gsub!(')', '')
-		goal[i].gsub!(' ', '')
+		goal_str[i].gsub!('(', '')
+		goal_str[i].gsub!(')', '')
+		goal_str[i].gsub!(' ', '')
 
 		stacks[i] = Stack.new
 		s.split(",").each do |c|
 			stacks[i].push c
 		end
 
-		goal[i] = goal[i].split(",")
+		goal_stacks[i] = Stack.new
+		goal_str[i].split(",").each do |c|
+			goal_stacks[i].push c
+		end
+
 	end
 
+	start = Node.new(stacks, nil, "0,0", 0, max)
+	goal = Node.new(goal_stacks, nil, nil, 0, max)
 	# puts max
-	print stacks
-	puts "\n"
-	print goal
-	n = Node.new(stacks, nil, nil,0, max)
-	puts "node\n"
-	print n.children
-	puts ""
-	print generate_child(n, "0,1").state
+	# print start.state[0].local
+	# print goal.state[0].local
+	# print start.equals? goal
+
+	Q = Array.new
+	V = Array.new
+	Q.push start
+	found = false
+	while !Q.empty? && !found
+		n = Q.pop
+		if !V.include? n then
+			if n.equals? goal then
+				found = true
+			else
+				V.push n
+				n.children.each do |c|
+					Q.push generate_child(n,c)
+				end
+				Q.sort_by do |node|
+					node.path_cost
+				end
+			end
+		end
+	end
+
+	print V
 
 end
 
@@ -122,7 +160,8 @@ end
 # Picking up the container takes 0.5 minutes
 # Moving the container one stack to the left or right takes 1 minute.
 # Putting the container down takes 0.5 minutes
-def cost_function(a,b)
+def cost_function(a, b)
 	(a - b).abs + 1
 end
+
 parse
