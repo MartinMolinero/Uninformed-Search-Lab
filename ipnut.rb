@@ -121,6 +121,19 @@ class Node
 		end
 		true
 	end
+
+	def hash
+		res = 0
+		hash = Hash.new
+		@state.each_with_index do |s,i|
+			s.local.each_with_index do |val, j|
+				str = i.to_s + "," + j.to_s
+				tmp = {val.to_s => str}
+				hash.merge!(tmp)
+			end
+		end
+		hash
+	end
 end
 
 def parse
@@ -209,6 +222,35 @@ end
 # Putting the container down takes 0.5 minutes
 def cost_function(a, b)
 	(a - b).abs + 1
+end
+
+
+def total_cost(cost, heuristic_val)
+	cost + heuristic_val
+end
+
+def heuristic_misplaced(current, goal)
+	sum = 0
+	h1 = current.hash
+	h2 = goal.hash
+	h1.each do |key, val|
+		if h1[key] != h2[key] then
+			sum += 1
+		end
+	end
+	sum
+end
+
+def heuristic_misplaced_times_2(current, goal)
+	sum = 0
+	h1 = current.hash
+	h2 = goal.hash
+	h1.each do |key, val|
+		if h1[key] != h2[key] then
+			sum += 1
+		end
+	end
+	sum * 2
 end
 
 parse
