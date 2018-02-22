@@ -1,2 +1,2 @@
 #!/bin/sh
-ruby ipnut.rb
+ruby ipnut.rb 1

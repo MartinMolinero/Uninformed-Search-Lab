@@ -46,7 +46,6 @@ class Node
 	def path_cost
 		@path_cost
 	end
-
 	def children
 		#compute the possible children from the action set
 		@actions = []
@@ -141,6 +140,7 @@ def parse
 	max = $stdin.readline
 	start = $stdin.readline.chomp()
 	goal_str = $stdin.readline.chomp()
+	heuristic = ARGV[0]
 	stacks_str = start.split(";")
 	goal_str = goal_str.split(";")
 	stacks = Array.new
@@ -198,7 +198,8 @@ def parse
 					@Q.push n.generate_child(c)
 				end
 				@Q.sort_by! do |node|
-					node.path_cost
+					v = choose_heuristic(heuristic, node, goal)
+					node.path_cost + v
 				end
 			end
 		end
@@ -239,7 +240,7 @@ def heuristic_misplaced(current, goal)
 			sum += 1
 		end
 	end
-	sum
+	return sum
 end
 
 def heuristic_misplaced_times_2(current, goal)
@@ -251,7 +252,20 @@ def heuristic_misplaced_times_2(current, goal)
 			sum += 1
 		end
 	end
-	sum * 2
+	return sum * 2
+end
+
+def choose_heuristic(p_heuristic, current, goal)
+	heuristic = 0
+	case p_heuristic.to_i
+	when 0
+		heuristic = 0
+	when 1
+		heuristic = heuristic_misplaced(current, goal)
+	when 2
+		heuristic = heuristic_misplaced_times_2(current, goal)
+	end
+	return heuristic
 end
 
 parse
