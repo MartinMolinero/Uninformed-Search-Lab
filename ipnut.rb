@@ -29,7 +29,11 @@ class Stack
 	end
 
 	def to_s
-		local.to_s
+		@local.to_s
+	end
+
+	def empty?
+		@local.empty?
 	end
 end
 
@@ -60,7 +64,7 @@ class Node
 		@possible_actions.each_with_index do |p, i|
 			a = p.split(",")[0]
 			b = p.split(",")[1]
-			if (@state[b.to_i].length + 1 <= @max) then
+			if (@state[b.to_i].length + 1 <= @max && !@state[a.to_i].empty?) then
 				@final_actions.push(p)
 			end
 		end
@@ -212,9 +216,8 @@ def parse
 		end
 		puts n.path_cost
 		print res[0, res.length() -2 ]
+		# print "\nA total of " + @V.length.to_s + " nodes were searched"
 	end
-
-
 
 end
 
@@ -240,10 +243,10 @@ def heuristic_misplaced(current, goal)
 			sum += 1
 		end
 	end
-	return sum
+	return sum * 2
 end
 
-def heuristic_misplaced_times_2(current, goal)
+def heuristic_misplaced_times_10(current, goal)
 	sum = 0
 	h1 = current.hash
 	h2 = goal.hash
@@ -252,7 +255,7 @@ def heuristic_misplaced_times_2(current, goal)
 			sum += 1
 		end
 	end
-	return sum * 2
+	return sum * 10
 end
 
 def choose_heuristic(p_heuristic, current, goal)
@@ -263,7 +266,7 @@ def choose_heuristic(p_heuristic, current, goal)
 	when 1
 		heuristic = heuristic_misplaced(current, goal)
 	when 2
-		heuristic = heuristic_misplaced_times_2(current, goal)
+		heuristic = heuristic_misplaced_times_10(current, goal)
 	end
 	return heuristic
 end
